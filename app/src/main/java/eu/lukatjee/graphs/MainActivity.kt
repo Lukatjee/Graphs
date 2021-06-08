@@ -16,23 +16,37 @@ import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    private lateinit var aEt : EditText
+    private lateinit var bEt : EditText
+    private lateinit var cEt : EditText
+
+    private lateinit var berekenButton : Button
+    private lateinit var clearButton : Button
+
+    private lateinit var graph : GraphView
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val berekenButton = findViewById<Button>(R.id.berekenButton)
+        aEt = findViewById(R.id.aEditText)
+        bEt = findViewById(R.id.bEditText)
+        cEt = findViewById(R.id.cEditText)
+
+        berekenButton = findViewById(R.id.berekenButton)
         berekenButton.setOnClickListener(this)
 
-        val clearButton = findViewById<Button>(R.id.clearButton)
+        clearButton = findViewById(R.id.clearButton)
         clearButton.setOnClickListener(this)
+
+        graph = findViewById(R.id.graph)
 
     }
 
-    fun graphDraw(a : Double, b : Double, c : Double, x1 : Double, discriminant : Double, x2 : Double) {
+    private fun graphDraw(a : Double, b : Double, c : Double, x1 : Double, discriminant : Double, x2 : Double) {
 
         val series = LineGraphSeries<DataPoint>()
-        val graph = findViewById<GraphView>(R.id.graph)
 
         graph.viewport.isScrollable = true
         graph.viewport.isScalable = true
@@ -44,25 +58,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (x1 > x2) {
                 
                 var puntLinks = x2 - 2.1
-                val puntBasis = x2
+                val puntRechts = x1 + 2.1
 
-                while (puntLinks < puntBasis) {
+                while (puntLinks < puntRechts) {
 
                     puntLinks += 0.1
-                    val point = (a * puntLinks.pow(2.0)) + (b * puntLinks) + c
 
-                    series.appendData(DataPoint(puntLinks, point), true, 10000)
+                    while (puntLinks < puntRechts) {
 
-                }
+                        puntLinks += 0.1
+                        val point = (a * puntLinks.pow(2.0)) + (b * puntLinks) + c
 
-                var puntRechts = x1 + 2.1
-                var nul = x1 - 2.1
+                        series.appendData(DataPoint(puntLinks, point), true, 5000)
 
-                while (nul < puntRechts) {
-
-                    nul += 0.1
-                    val point = (a * nul.pow(2.0)) + (b * nul) + c
-                    series.appendData(DataPoint(nul, point), true, 10000)
+                    }
 
                 }
 
@@ -73,25 +82,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             } else {
 
                 var puntLinks = x1 - 2.1
-                val puntBasis = x1
+                val puntRechts = x2 + 2.1
 
-                while (puntLinks < puntBasis) {
+                while (puntLinks < puntRechts) {
 
                     puntLinks += 0.1
                     val point = (a * puntLinks.pow(2.0)) + (b * puntLinks) + c
 
                     series.appendData(DataPoint(puntLinks, point), true, 5000)
-
-                }
-
-                var puntRechts = x2 + 2.1
-                var nul = x2 - 2.1
-
-                while (nul < puntRechts) {
-
-                    nul += 0.1
-                    val point = (a * nul.pow(2.0)) + (b * nul) + c
-                    series.appendData(DataPoint(nul, point), true, 5000)
 
                 }
 
@@ -127,13 +125,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.berekenButton -> {
 
-                val aEt = findViewById<EditText>(R.id.aEditText)
-                val bEt = findViewById<EditText>(R.id.bEditText)
-                val cEt = findViewById<EditText>(R.id.cEditText)
-
-                var a = aEt.text.toString().trim()
-                var b = bEt.text.toString().trim()
-                var c = cEt.text.toString().trim()
+                val a = aEt.text.toString().trim()
+                val b = bEt.text.toString().trim()
+                val c = cEt.text.toString().trim()
 
                 if (a.isEmpty() || b.isEmpty() || c.isEmpty()) {
 
@@ -153,16 +147,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     val x1 = -bDouble / 2 * aDouble
 
                     val solutionTv = findViewById<TextView>(R.id.solutionTv)
-                    solutionTv.text = "D = 0 | x = ${x1}"
+                    solutionTv.text = getString(R.string.discriminant_nul, discriminant.toFloat(), x1.toFloat())
 
                     graphDraw(aDouble, bDouble, cDouble, x1, discriminant, 0.0)
+                    println(x1)
 
                     return
 
                 } else if (discriminant < 0) {
 
                     val solutionTv = findViewById<TextView>(R.id.solutionTv)
-                    solutionTv.text = "niet mogelijk"
+                    solutionTv.text = getString(R.string.niet_mogelijk)
 
                     return
 
@@ -172,7 +167,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val x2 = (-bDouble - sqrt(discriminant)) / (2 * aDouble)
 
                 val solutionTv = findViewById<TextView>(R.id.solutionTv)
-                solutionTv.text = "D = ${discriminant} | x1 = ${x1} | x2 = ${x2}"
+                solutionTv.text = getString(R.string.discriminant_non_nul, discriminant.toFloat(), x1.toFloat(), x2.toFloat())
 
                 graphDraw(aDouble, bDouble, cDouble, x1, discriminant, x2)
 
@@ -181,12 +176,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.clearButton -> {
 
                 val aEt = findViewById<EditText>(R.id.aEditText)
-                val bEt = findViewById<EditText>(R.id.bEditText)
-                val cEt = findViewById<EditText>(R.id.cEditText)
-
                 aEt.text.clear()
+
+                val bEt = findViewById<EditText>(R.id.bEditText)
                 bEt.text.clear()
+
+                val cEt = findViewById<EditText>(R.id.cEditText)
                 cEt.text.clear()
+
+                graph.removeAllSeries()
 
             }
 

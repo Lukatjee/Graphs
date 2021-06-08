@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Graphs</string>
+    <string name="niet_mogelijk">Geen oplossingen</string>
+    <string name="discriminant_nul">Discriminant: %1$.2f; X<sub>1</sub>: %2$.2f; X<sub>2</sub>: /</string>
+    <string name="discriminant_non_nul">Discriminant: %1$.2f; X<sub>1</sub>: %2$.2f; X<sub>2</sub>: %3$.2f</string>
+    <string name="a_edittext">a</string>
+    <string name="b_edittext">b</string>
+    <string name="c_edittext">c</string>
+    <string name="bereken_button">Bereken</string>
+    <string name="clear_button">Clear</string>
 </resources>
